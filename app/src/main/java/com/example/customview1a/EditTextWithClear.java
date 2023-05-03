@@ -11,6 +11,7 @@ import android.view.View;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.AppCompatEditText;
+import androidx.appcompat.widget.ViewUtils;
 import androidx.core.content.res.ResourcesCompat;
 
 public class EditTextWithClear extends AppCompatEditText {
@@ -19,7 +20,7 @@ public class EditTextWithClear extends AppCompatEditText {
     Boolean rtlActive;
 
     private void init(){
-        rtlActive = getResources().getBoolean(R.bool.rtlActive);
+       // rtlActive = getResources().getBoolean(R.bool.rtlActive);
         mClearButtonImage = ResourcesCompat.getDrawable
                 (getResources(), R.drawable.ic_clear_opaque_24dp, null);
         // mengambil drawable opaque
@@ -48,21 +49,24 @@ public class EditTextWithClear extends AppCompatEditText {
             @Override
             public boolean onTouch(View view, MotionEvent motionEvent) {
 
-                if(getCompoundDrawables()[2] != null) {
+                if(getCompoundDrawablesRelative()[2] != null) {
                     float lft_clearButtonStart =
-                            (getWidth()-getPaddingEnd()-mClearButtonImage.getIntrinsicWidth());
+                                (getWidth() - getPaddingEnd() - mClearButtonImage.getIntrinsicWidth());
                     float rgt_clearButtonStart =
-                            (getPaddingEnd()+mClearButtonImage.getIntrinsicWidth());
-                    // mendapatkan letak dari clear button
+                                (getPaddingEnd() + mClearButtonImage.getIntrinsicWidth());
+                        // mendapatkan letak dari clear button
                     boolean isClearButtonClicked = false;
-
                     // letak dibatasi pada batas-batas gambar clear button
                     // apabila daerah clear button disentuh, dianggap edit text sedang disentuh
-                    if(motionEvent.getX() > lft_clearButtonStart){
-                        isClearButtonClicked = true;
-                    }
-                    if(motionEvent.getX() < rgt_clearButtonStart){
-                        isClearButtonClicked = true;
+
+                    if (ViewUtils.isLayoutRtl(getRootView())) {
+                        if (motionEvent.getX() < rgt_clearButtonStart) {
+                            isClearButtonClicked = true;
+                        }
+                    } else {
+                        if (motionEvent.getX() > lft_clearButtonStart) {
+                            isClearButtonClicked = true;
+                        }
                     }
 
                     if(isClearButtonClicked){
@@ -107,7 +111,7 @@ public class EditTextWithClear extends AppCompatEditText {
 
     // membuat method show clear button dan hide clear button
     private void showClearButton(){
-        setCompoundDrawablesWithIntrinsicBounds(null, null, mClearButtonImage, null);
+        setCompoundDrawablesRelativeWithIntrinsicBounds(null, null, mClearButtonImage, null);
         // digunakan untuk menempelkan komponen. mau ditempel di sebelah top, left, right, bottom
         // misal mau ditempatkan di sebelah kanan, maka diisi bagian right
     }
